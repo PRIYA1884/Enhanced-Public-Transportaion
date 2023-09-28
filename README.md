@@ -1,0 +1,30 @@
+# Enhanced-Public-Transportaion
+import pandas as pd
+import matplotlib.pyplot as plt
+# Load transportation data (example: CSV file)
+transport_data = pd.read_csv('transport_data.csv')
+
+# Assuming 'ScheduledTime' and 'ActualTime' columns in the dataset
+# Convert time columns to datetime objects for analysis
+transport_data['ScheduledTime'] = pd.to_datetime(transport_data['ScheduledTime'])
+transport_data['ActualTime'] = pd.to_datetime(transport_data['ActualTime'])
+
+# Calculate the time difference between scheduled and actual times
+transport_data['TimeDifference'] = (transport_data['ActualTime'] - transport_data['ScheduledTime']).dt.total_seconds()
+
+# Calculate the percentage of on-time arrivals
+on_time_threshold = 300  # Assuming 5 minutes (300 seconds) delay is considered on-time
+on_time_percentage = (transport_data['TimeDifference'] <= on_time_threshold).mean() * 100
+
+# Visualize on-time performance
+plt.figure(figsize=(8, 6))
+plt.hist(transport_data['TimeDifference'], bins=30, color='skyblue', edgecolor='black')
+plt.axvline(x=on_time_threshold, color='red', linestyle='--', label=f'On-Time Threshold ({on_time_threshold} sec)')
+plt.xlabel('Time Difference (seconds)')
+plt.ylabel('Frequency')
+plt.title('Distribution of Arrival Time Differences')
+plt.legend()
+plt.show()
+
+# Print on-time performance percentage
+print(f'Percentage of on-time arrivals: {on_time_percentage:.2f}%')
